@@ -1,0 +1,24 @@
+{
+  "name": "employee-manager",
+  "version": "1.0.0",
+  "description": "A terminal application that allows managment of employee databases.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacobmcanepa/employee-manager.git"
+  },
+  "author": "Jacob M. Canepa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jacobmcanepa/employee-manager/issues"
+  },
+  "homepage": "https://github.com/jacobmcanepa/employee-manager#readme",
+  "dependencies": {
+    "inquirer": "^8.2.4",
+    "mysql2": "^2.3.3"
+  }
+}
