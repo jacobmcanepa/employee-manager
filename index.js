@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const db = require('./db/connection');
+const cTable = require('console.table');
 
 db.connect(err => {
   if (err) throw err;
@@ -53,24 +54,65 @@ const initialPrompt = () => {
 };
 
 const viewDepartments = () => {
-  console.log('View departments function activated');
   const sql = `SELECT * FROM department`;
 
   db.query(sql, (err, data) => {
     if (err) throw err;
-    console.log(data);
+    console.table('\nDepartments', data);
+    initialPrompt();
   });
-  initialPrompt();
 };
 
 const viewRoles = () => {
-  console.log('View roles function activated');
-  initialPrompt();
+  const sql = `SELECT role.*, department.name AS department_name
+               FROM role
+               LEFT JOIN department
+               ON role.department_id = department.id`;
+
+  db.query(sql, (err, data) => {
+    let filteredData = [];
+    if (err) throw err;
+
+    data.forEach(role => {
+      const obj = {
+        id: role.id,
+        title: role.title,
+        salary: role.salary,
+        department_name: role.department_name
+      };
+      filteredData.push(obj);
+    });
+
+    console.table('\nRoles', filteredData);
+    initialPrompt();
+  });
 };
 
 const viewEmployees = () => {
-  console.log('View employees function acitvated');
-  initialPrompt();
+  const sql =  `SELECT employee.*, role.title, role.salary, department.name AS department
+                FROM employee
+                LEFT JOIN role ON employee.role_id = role.id
+                LEFT JOIN department ON role.department_id = department.id`;
+  
+  db.query(sql, (err, data) => {
+    let filteredData = [];
+    if (err) throw err;
+
+    data.forEach(employee => {
+      const obj = {
+        id: employee.id,
+        first_name: employee.first_name,
+        last_name: employee.last_name,
+        title: employee.title,
+        salary: employee.salary,
+        department: employee.department
+      };
+      filteredData.push(obj);
+    });
+
+    console.table('\nEmployees', filteredData);
+    initialPrompt();
+  });
 };
 
 const addDepartment = () => {
