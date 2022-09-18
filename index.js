@@ -9,7 +9,7 @@ db.connect(err => {
 });
 
 const initialPrompt = () => {
-  return inquirer
+  inquirer
     .prompt({
       type: 'list',
       name: 'initialPrompt',
@@ -50,6 +50,9 @@ const initialPrompt = () => {
         case ('EXIT'):
           db.end();
       }
+    })
+    .catch(err => {
+      console.log(err);
     });
 };
 
@@ -64,7 +67,7 @@ const viewDepartments = () => {
 };
 
 const viewRoles = () => {
-  const sql = `SELECT role.*, department.name AS department
+  const sql = `SELECT role.*, department.name AS departments
                FROM role
                LEFT JOIN department
                ON role.department_id = department.id`;
@@ -78,7 +81,7 @@ const viewRoles = () => {
         id: role.id,
         title: role.title,
         salary: role.salary,
-        department_name: role.department_name
+        departments: role.departments
       };
       filteredData.push(obj);
     });
@@ -116,9 +119,38 @@ const viewEmployees = () => {
 };
 
 const addDepartment = () => {
-  console.log('Add departments function activated');
-  initialPrompt();
+  inquirer
+    .prompt({
+      type: 'text',
+      name: 'departmentName',
+      message: 'What is the name of the new department?',
+      validate: input => {
+        if (input) {
+          return true;
+        } else {
+          console.log('Please enter a name!');
+          return false;
+        }
+      }
+    })
+    .then(answer => {
+      addDepartmentQuery(answer);
+    })
+    .catch(err => {
+      console.log(err);
+    });
 };
+
+const addDepartmentQuery = (answer => {
+  const sql = `INSERT INTO department (name) VALUES (?)`;
+  const params = [answer.departmentName];
+
+  db.query(sql, params, (err, result) => {
+    if (err) throw err;
+    console.log('A new department has been added!');
+    initialPrompt();
+  });
+});
 
 const addRole = () => {
   console.log('Add role function activated');
