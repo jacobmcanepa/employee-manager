@@ -64,7 +64,7 @@ const viewDepartments = () => {
 };
 
 const viewRoles = () => {
-  const sql = `SELECT role.*, department.name AS department_name
+  const sql = `SELECT role.*, department.name AS department
                FROM role
                LEFT JOIN department
                ON role.department_id = department.id`;
