@@ -54,6 +54,12 @@ const initialPrompt = () => {
 
 const viewDepartments = () => {
   console.log('View departments function activated');
+  const sql = `SELECT * FROM department`;
+
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+    console.log(data);
+  });
   initialPrompt();
 };
 
