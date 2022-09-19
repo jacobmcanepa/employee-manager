@@ -14,15 +14,16 @@ const initialPrompt = () => {
       type: 'list',
       name: 'initialPrompt',
       message: 'What would you like to do?',
-      choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee', 'EXIT'],
-      validate: input => {
-        if (input.length > 0) {
-          return true;
-        } else {
-          console.log('Please pick an option!');
-          return false;
-        }
-      }
+      choices: [
+        'View all departments', 
+        'View all roles', 
+        'View all employees', 
+        'Add a department', 
+        'Add a role', 
+        'Add an employee', 
+        'Update an employee', 
+        'EXIT'
+      ]
     })
     .then(answer => {
       switch (answer.initialPrompt) {
@@ -123,7 +124,7 @@ const addDepartment = () => {
     .prompt({
       type: 'text',
       name: 'departmentName',
-      message: 'What is the name of the new department?',
+      message: 'Enter new department name:',
       validate: input => {
         if (input) {
           return true;
@@ -141,20 +142,90 @@ const addDepartment = () => {
     });
 };
 
-const addDepartmentQuery = (answer => {
+const addDepartmentQuery = answer => {
   const sql = `INSERT INTO department (name) VALUES (?)`;
   const params = [answer.departmentName];
 
   db.query(sql, params, (err, result) => {
     if (err) throw err;
-    console.log('A new department has been added!');
+    console.log('\nA new department has been added!\n');
     initialPrompt();
   });
-});
+};
 
 const addRole = () => {
-  console.log('Add role function activated');
-  initialPrompt();
+  inquirer
+    .prompt([
+      {
+        type: 'text',
+        name: 'roleTitle',
+        message: 'Enter new role title:',
+        validate: input => {
+          if (input) {
+            return true;
+          } else {
+            console.log('Please enter a title!');
+            return false;
+          }
+        }
+      },
+      {
+        type: 'number',
+        name: 'roleSalary',
+        message: "Enter the new role's salary:",
+        validate: input => {
+          if (input) {
+            return true;
+          } else {
+            console.log('Please enter in a salary amount!');
+            return false;
+          }
+        }
+      },
+      {
+        type: 'list',
+        name: 'roleDepartment',
+        choices: [
+          'Engineering',
+          'Finance',
+          'Legal',
+          'Sales'
+        ]
+      }
+    ])
+    .then(answers => {
+      addRoleQuery(answers);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+};
+
+const addRoleQuery = answers => {
+  let departmentId;
+  switch (answers.roleDepartment) {
+    case ('Engineering'):
+      departmentId = 1;
+      break;
+    case ('Finance'):
+      departmentId = 2;
+      break;
+    case ('Legal'):
+      departmentId = 3;
+      break;
+    case ('Sales'):
+      departmentId = 4;
+      break;
+  }
+  
+  const sql = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`;
+  const params = [answers.roleTitle, answers.roleSalary, departmentId];
+
+  db.query(sql, params, (err, data) => {
+    if (err) throw err;
+    console.log('\nA new role as been added!\n');
+    initialPrompt();
+  });
 };
 
 const addEmployee = () => {
