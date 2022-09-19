@@ -183,14 +183,17 @@ const addRole = () => {
         }
       },
       {
-        type: 'list',
-        name: 'roleDepartment',
-        choices: [
-          'Engineering',
-          'Finance',
-          'Legal',
-          'Sales'
-        ]
+        type: 'number',
+        name: 'departmentId',
+        message: 'Enter department ID number:',
+        validate: input => {
+          if (input) {
+            return true;
+          } else {
+            console.log('Please enter a valid ID!');
+            return false;
+          }
+        }
       }
     ])
     .then(answers => {
@@ -198,28 +201,12 @@ const addRole = () => {
     })
     .catch(err => {
       console.log(err);
-    })
+    });
 };
 
-const addRoleQuery = answers => {
-  let departmentId;
-  switch (answers.roleDepartment) {
-    case ('Engineering'):
-      departmentId = 1;
-      break;
-    case ('Finance'):
-      departmentId = 2;
-      break;
-    case ('Legal'):
-      departmentId = 3;
-      break;
-    case ('Sales'):
-      departmentId = 4;
-      break;
-  }
-  
+const addRoleQuery = answers => { 
   const sql = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`;
-  const params = [answers.roleTitle, answers.roleSalary, departmentId];
+  const params = [answers.roleTitle, answers.roleSalary, answers.departmentId];
 
   db.query(sql, params, (err, data) => {
     if (err) throw err;
@@ -229,8 +216,65 @@ const addRoleQuery = answers => {
 };
 
 const addEmployee = () => {
-  console.log('Add employee function activated');
-  initialPrompt();
+  inquirer
+    .prompt([
+      {
+        type: 'text',
+        name: 'firstName',
+        message: 'Enter in a first name:',
+        validate: input => {
+          if (input) {
+            return true;
+          } else {
+            console.log('Please enter in a first name!');
+            return false;
+          }
+        }
+      },
+      {
+        type: 'text',
+        name: 'lastName',
+        message: 'Enter in a last name:',
+        validate: input => {
+          if (input) {
+            return true;
+          } else {
+            console.log('Please enter in a last name!');
+            return false;
+          }
+        }
+      },
+      {
+        type: 'number',
+        name: 'roleId',
+        message: 'Enter role ID number:',
+        validate: input => {
+          if (input) {
+            return true;
+          } else {
+            console.log('Please enter valid role ID!');
+            return false;
+          }
+        }
+      }
+    ])
+    .then(answers => {
+      addEmployeeQuery(answers);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+const addEmployeeQuery = answers => {
+  const sql = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?,?,?)`;
+  const params = [answers.firstName, answers.lastName, answers.roleId];
+
+  db.query(sql, params, (err, result) => {
+    if (err) throw err;
+    console.log('\nA new employee has been added!\n');
+    initialPrompt();
+  });
 };
 
 const updateEmployee = () => {
