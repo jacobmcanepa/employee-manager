@@ -154,6 +154,14 @@ const addDepartmentQuery = answer => {
 };
 
 const addRole = () => {
+  let arr = [];
+  db.query(`SELECT name FROM department`, (err, result) => {
+    if (err) throw err;
+    result.forEach(item => {
+      arr.push(item.name);
+    });
+  });
+
   inquirer
     .prompt([
       {
@@ -183,30 +191,24 @@ const addRole = () => {
         }
       },
       {
-        type: 'number',
-        name: 'departmentId',
-        message: 'Enter department ID number:',
-        validate: input => {
-          if (input) {
-            return true;
-          } else {
-            console.log('Please enter a valid ID!');
-            return false;
-          }
-        }
+        type: 'list',
+        name: 'departmentName',
+        message: 'Pick a department:',
+        choices: arr
       }
     ])
     .then(answers => {
-      addRoleQuery(answers);
+      const index = (arr.indexOf(answers.departmentName) + 1);
+      addRoleQuery(answers, index);
     })
     .catch(err => {
       console.log(err);
     });
 };
 
-const addRoleQuery = answers => { 
+const addRoleQuery = (answers, index) => {
   const sql = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`;
-  const params = [answers.roleTitle, answers.roleSalary, answers.departmentId];
+  const params = [answers.roleTitle, answers.roleSalary, index];
 
   db.query(sql, params, (err, data) => {
     if (err) throw err;
@@ -216,6 +218,17 @@ const addRoleQuery = answers => {
 };
 
 const addEmployee = () => {
+  // start empty array
+  // write query that updates array with current role info
+  // use array as choices argument for list question
+  let arr = [];
+  db.query(`SELECT title FROM role`, (err, result) => {
+    if (err) throw err;
+    result.forEach(item => {
+      arr.push(item.title);
+    });
+  });
+
   inquirer
     .prompt([
       {
@@ -245,30 +258,24 @@ const addEmployee = () => {
         }
       },
       {
-        type: 'number',
-        name: 'roleId',
-        message: 'Enter role ID number:',
-        validate: input => {
-          if (input) {
-            return true;
-          } else {
-            console.log('Please enter valid role ID!');
-            return false;
-          }
-        }
+        type: 'list',
+        name: 'roleTitle',
+        message: 'Pick a role:',
+        choices: arr
       }
     ])
     .then(answers => {
-      addEmployeeQuery(answers);
+      const index = (arr.indexOf(answers.roleTitle) + 1);
+      addEmployeeQuery(answers, index);
     })
     .catch(err => {
       console.log(err);
     });
 };
 
-const addEmployeeQuery = answers => {
+const addEmployeeQuery = (answers, index) => {
   const sql = `INSERT INTO employee (first_name, last_name, role_id) VALUES (?,?,?)`;
-  const params = [answers.firstName, answers.lastName, answers.roleId];
+  const params = [answers.firstName, answers.lastName, index];
 
   db.query(sql, params, (err, result) => {
     if (err) throw err;
