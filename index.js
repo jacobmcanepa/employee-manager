@@ -237,7 +237,8 @@ const addEmployee = () => {
           const id = data[index].id;
           addEmployeeQuery(answers, id);        
         });
-    });
+    })
+    .catch(err => console.log(err));
 };
 
 const employeePrompts = (arr) => {
@@ -313,7 +314,8 @@ const updateEmployee = () => {
               updateEmployeeQuery(roleId, employeeId);
             });
         });
-    });
+    })
+    .catch(err => console.log(err));
 };
 
 const updatePrompts = (employeeArr, roleArr) => {
